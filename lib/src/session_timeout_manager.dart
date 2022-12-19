@@ -19,10 +19,12 @@ class SessionTimeoutManager extends StatefulWidget {
   /// Since updating [Timer] fir all user interactions could be expensive, user activity are recorded
   /// only after [userActivityDebounceDuration] interval, by default its 1 minute
   final Duration userActivityDebounceDuration;
+  final Function() checkForKeyboard;
   const SessionTimeoutManager(
       {Key? key,
       required sessionConfig,
       required this.child,
+      required this.checkForKeyboard,
       sessionStateStream,
       this.userActivityDebounceDuration = const Duration(seconds: 10)})
       : _sessionConfig = sessionConfig,
@@ -107,13 +109,7 @@ class _SessionTimeoutManagerState extends State<SessionTimeoutManager>
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).viewInsets.bottom > 0) {
-      // softkeyboard is open
-      widget._sessionStateStream.add(SessionState.stopListening);
-    } else {
-      // keyboard is closed
-      widget._sessionStateStream.add(SessionState.startListening);
-    }
+   widget.checkForKeyboard();
     // Attach Listener only if user wants to invalidate session on user inactivity
     if (_isListensing &&
         widget._sessionConfig.invalidateSessionForUserInactivity != null) {
