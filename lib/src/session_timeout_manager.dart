@@ -107,6 +107,13 @@ class _SessionTimeoutManagerState extends State<SessionTimeoutManager>
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.of(context).viewInsets.bottom > 0) {
+      // softkeyboard is open
+      widget.sessionStream.add(SessionState.stopListening);
+    } else {
+      // keyboard is closed
+      widget.sessionStream.add(SessionState.startListening);
+    }
     // Attach Listener only if user wants to invalidate session on user inactivity
     if (_isListensing &&
         widget._sessionConfig.invalidateSessionForUserInactivity != null) {
